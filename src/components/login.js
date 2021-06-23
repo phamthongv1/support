@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import SignIn from "./sign-in";
 import SignUp from "./sign-up";
@@ -12,14 +12,12 @@ export default function Login({ setIsLogin }) {
     password: "",
   });
 
-  const [err, setErr] = useState("");
-  const [checked, setChecked] = useState(false)
+  const [checked, setChecked] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
-    setErr("");
   };
 
   const registerSubmit = async (e) => {
@@ -31,29 +29,25 @@ export default function Login({ setIsLogin }) {
         password: user.password,
       });
       setUser({ name: "", email: "", password: "" });
-      setErr(res.data.msg);
     } catch (err) {
-      err.response.data.msg && setErr(err.response.data.msg);
     }
   };
 
   const loginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/user/login", {
+      const res = await axios.post("/v1/auth/login", {
         email: user.email,
         password: user.password,
       });
       setUser({ email: "", password: "" });
-      localStorage.setItem("tokenStore", res.data.token);
+      localStorage.setItem("tokenStore", res.data.tokens.access.token);
       setIsLogin(true);
-      if(checked){
-        localStorage.setItem('name', JSON.stringify(user.name));
-        localStorage.setItem('password', JSON.stringify(user.password));
+      if (checked) {
+        localStorage.setItem("name", JSON.stringify(user.name));
+        localStorage.setItem("password", JSON.stringify(user.password));
       }
-      setErr(res.data.msg);
     } catch (err) {
-      err.response.data.msg && setErr(err.response.data.msg);
     }
   };
 
@@ -63,7 +57,7 @@ export default function Login({ setIsLogin }) {
   };
 
   const isRememberMe = (e) => {
-    setChecked(checked ? false : true)
+    setChecked(checked ? false : true);
   };
 
   return (
