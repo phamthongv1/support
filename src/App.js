@@ -1,23 +1,37 @@
 /** @format */
 
-import React from "react";
-import Home from "./components/homepage";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Login from "./components/login";
-import Forgot from "./components/forgot";
-import SignIn from "./components/sign-in";
-import SignUp from "./components/sign-up";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import Home from "./components/homepage"
 
-function App() {
+export default function App() {
+  const [isLogin, setIsLogin] = useState(false);
+
+  // CHECK LOGIN
+  useEffect(() => {
+    const checkLogin = async () => {
+      const token = localStorage.getItem("tokenStore");
+      if (token) {
+        // CHECK TOKEN
+        const verified = await axios.get("/v1/auth/refresh-tokens", {
+          headers: { Authorization: token },
+        });
+        setIsLogin(verified.data);
+        if (verified.data === false) return localStorage.clear();
+      } else {
+        setIsLogin(false);
+      }
+    };
+    checkLogin();
+  }, []);
   return (
-    <Router>
-      <Route path="/" component={Home} exact/>
-      <Route path="/login" component={Login} exact/>
-      <Route path="/forgot" component={Forgot} exact/>
-      <Route path="/signin" component={SignIn} exact/>
-      <Route path="/signup" component={SignUp} exact/>
-    </Router>
+    <div className="App">
+      {isLogin ? (
+        <Home setIsLogin={setIsLogin} />
+      ) : (
+        <Login setIsLogin={setIsLogin} />
+      )}
+    </div>
   );
 }
-
-export default App;

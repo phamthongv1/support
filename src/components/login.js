@@ -22,21 +22,24 @@ export default function Login({ setIsLogin }) {
 
   const registerSubmit = async (e) => {
     e.preventDefault();
+    const userName = user.firstName + " " + user.lastName;
     try {
-      const res = await axios.post("/user/register", {
-        username: user.name,
-        email: user.email,
-        password: user.password,
-      });
+      const res = await axios.post(
+        "http://139.162.28.44:3000/v1/auth/register",
+        {
+          name: userName,
+          email: user.email,
+          password: user.password,
+        }
+      );
       setUser({ name: "", email: "", password: "" });
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const loginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/v1/auth/login", {
+      const res = await axios.post("http://139.162.28.44:3000/v1/auth/login", {
         email: user.email,
         password: user.password,
       });
@@ -47,8 +50,7 @@ export default function Login({ setIsLogin }) {
         localStorage.setItem("name", JSON.stringify(user.name));
         localStorage.setItem("password", JSON.stringify(user.password));
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const handleRegister = (value) => {
